@@ -157,8 +157,8 @@ export default function SubtitleEditor({
         </div>
       )}
 
-      {/* Subtitles Scrollable Cards List */}
-      <div className="space-y-3.5 overflow-y-auto pr-1 flex-1 max-h-[560px]">
+      {/* Subtitles Scrollable Cards List with 20px Separation Gap */}
+      <div className="space-y-6 overflow-y-auto pr-2 flex-1 max-h-[580px]">
         {segments.map((seg, idx) => {
           const isActive = seg.id === activeId;
           const charLen = seg.text.length;
@@ -167,23 +167,23 @@ export default function SubtitleEditor({
           return (
             <div
               key={seg.id || idx}
-              className={`p-4 rounded-2xl border transition-all ${
+              className={`rounded-2xl border transition-all overflow-hidden shadow-xl ${
                 isActive
-                  ? 'bg-indigo-500/15 border-indigo-500/60 shadow-xl shadow-indigo-500/10 scale-[1.002]'
-                  : 'bg-slate-900/80 border-white/10 hover:border-white/20'
+                  ? 'bg-[#0f172a] border-indigo-500 border-l-4 border-l-indigo-400 shadow-indigo-500/20 ring-1 ring-indigo-500/30'
+                  : 'bg-[#0b1220] border-white/15 border-l-4 border-l-slate-600 hover:border-white/25'
               }`}
             >
-              {/* Card Header */}
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                <div className="flex items-center gap-2">
+              {/* Internal Header Strip */}
+              <div className="bg-slate-950/80 px-4 py-2.5 border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
                   <span className="px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 font-mono text-xs font-extrabold border border-indigo-500/30">
-                    #{idx + 1}
+                    Bloque #{idx + 1}
                   </span>
                   <button
                     onClick={() => onSeekTo(seg.start)}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs font-semibold transition"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-indigo-600/30 text-indigo-200 hover:bg-indigo-600/50 border border-indigo-500/40 text-xs font-semibold transition"
                   >
-                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <Play className="w-3.5 h-3.5 fill-current text-indigo-400" />
                     <span>Ir a {formatSeconds(seg.start)}</span>
                   </button>
                 </div>
@@ -191,7 +191,7 @@ export default function SubtitleEditor({
                 {/* Timestamps inputs */}
                 <div className="flex items-center gap-2 text-xs">
                   {/* Start time */}
-                  <div className="flex items-center gap-1 bg-black/60 px-2.5 py-1 rounded-xl border border-white/10 font-mono">
+                  <div className="flex items-center gap-1 bg-black/80 px-2.5 py-1 rounded-xl border border-white/15 font-mono">
                     <span className="text-gray-400 text-[10px] font-semibold">Inicio:</span>
                     <button
                       onClick={() => onSegmentUpdate(idx, 'start', Math.max(0, seg.start - 0.1))}
@@ -217,7 +217,7 @@ export default function SubtitleEditor({
                   <span className="text-gray-500 font-bold">→</span>
 
                   {/* End time */}
-                  <div className="flex items-center gap-1 bg-black/60 px-2.5 py-1 rounded-xl border border-white/10 font-mono">
+                  <div className="flex items-center gap-1 bg-black/80 px-2.5 py-1 rounded-xl border border-white/15 font-mono">
                     <span className="text-gray-400 text-[10px] font-semibold">Fin:</span>
                     <button
                       onClick={() => onSegmentUpdate(idx, 'end', Math.max(seg.start, seg.end - 0.1))}
@@ -242,42 +242,43 @@ export default function SubtitleEditor({
                 </div>
               </div>
 
-              {/* Editable Text Area with Cursor Position Tracker */}
-              <textarea
-                rows="2"
-                value={seg.text}
-                onChange={(e) => {
-                  cursorPositionsRef.current[idx] = e.target.selectionStart;
-                  onSegmentUpdate(idx, 'text', e.target.value);
-                }}
-                onClick={(e) => {
-                  cursorPositionsRef.current[idx] = e.target.selectionStart;
-                }}
-                onKeyUp={(e) => {
-                  cursorPositionsRef.current[idx] = e.target.selectionStart;
-                }}
-                onKeyDown={(e) => {
-                  // Hotkey Ctrl+Enter splits at cursor!
-                  if (e.ctrlKey && e.key === 'Enter') {
-                    e.preventDefault();
+              {/* Card Body - Textarea */}
+              <div className="p-3.5">
+                <textarea
+                  rows="2"
+                  value={seg.text}
+                  onChange={(e) => {
                     cursorPositionsRef.current[idx] = e.target.selectionStart;
-                    handleCursorSplit(idx);
-                  }
-                }}
-                className={`w-full bg-black/50 border rounded-xl p-3 text-sm text-gray-100 font-medium focus:outline-none transition leading-relaxed ${
-                  isWarning
-                    ? 'border-amber-500/60 focus:border-amber-500 ring-1 ring-amber-500/20'
-                    : 'border-white/15 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20'
-                }`}
-              />
+                    onSegmentUpdate(idx, 'text', e.target.value);
+                  }}
+                  onClick={(e) => {
+                    cursorPositionsRef.current[idx] = e.target.selectionStart;
+                  }}
+                  onKeyUp={(e) => {
+                    cursorPositionsRef.current[idx] = e.target.selectionStart;
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                      e.preventDefault();
+                      cursorPositionsRef.current[idx] = e.target.selectionStart;
+                      handleCursorSplit(idx);
+                    }
+                  }}
+                  className={`w-full bg-black/60 border rounded-xl p-3 text-sm text-gray-100 font-medium focus:outline-none transition leading-relaxed ${
+                    isWarning
+                      ? 'border-amber-500/60 focus:border-amber-500 ring-1 ring-amber-500/20'
+                      : 'border-white/15 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20'
+                  }`}
+                />
+              </div>
 
-              {/* Card Footer Actions */}
-              <div className="flex items-center justify-between mt-2 text-[11px]">
+              {/* Internal Footer Strip */}
+              <div className="bg-slate-950/90 px-4 py-2.5 border-t border-white/10 flex items-center justify-between gap-2">
                 {/* Character Counter Pill */}
-                <span className={`px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold flex items-center gap-1 ${
+                <span className={`px-3 py-1 rounded-full font-mono text-[11px] font-bold flex items-center gap-1.5 ${
                   isWarning
                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                    : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                 }`}>
                   {isWarning && <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />}
                   {charLen} / {maxChars} chars
@@ -289,7 +290,7 @@ export default function SubtitleEditor({
                   {idx < segments.length - 1 && (
                     <button
                       onClick={() => onSegmentMerge(idx)}
-                      className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 flex items-center gap-1 transition"
+                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 text-xs font-semibold flex items-center gap-1.5 transition"
                       title="Unir con el siguiente bloque"
                     >
                       <Combine className="w-3.5 h-3.5 text-indigo-400" />
@@ -300,7 +301,7 @@ export default function SubtitleEditor({
                   {/* Split at Cursor Button */}
                   <button
                     onClick={() => handleCursorSplit(idx)}
-                    className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 flex items-center gap-1 transition font-bold"
+                    className="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-500/40 text-xs font-extrabold flex items-center gap-1.5 transition shadow-sm"
                     title="Dividir el bloque exactamente donde tienes el cursor en el texto (o pulsa Ctrl+Enter)"
                   >
                     <Split className="w-3.5 h-3.5 text-cyan-400" />
@@ -309,10 +310,10 @@ export default function SubtitleEditor({
 
                   <button
                     onClick={() => onSegmentDelete(idx)}
-                    className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 flex items-center gap-1 transition"
+                    className="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition"
                     title="Eliminar subtítulo"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                     <span>Borrar</span>
                   </button>
                 </div>
@@ -323,7 +324,7 @@ export default function SubtitleEditor({
       </div>
 
       {/* Add Block Button */}
-      <div className="mt-3 pt-3 border-t border-white/10 flex justify-center">
+      <div className="mt-4 pt-3 border-t border-white/10 flex justify-center">
         <button
           onClick={onSegmentAdd}
           className="px-5 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-xs font-bold text-gray-200 flex items-center gap-2 transition shadow-md"
