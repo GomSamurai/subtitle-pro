@@ -1,0 +1,25 @@
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Frontend Dependencies
+frontend/node_modules/
+frontend/dist/
+
+# Audio/Video Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# OS / Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
