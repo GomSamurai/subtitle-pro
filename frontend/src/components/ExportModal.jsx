@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Download, Copy, Check, FileText, Code, FileSpreadsheet, Sparkles } from 'lucide-react';
+import { Download, Copy, Check, FileText, Code, FileSpreadsheet } from 'lucide-react';
 import YoutubeIcon from './YoutubeIcon';
+import { buildApiUrl } from '../apiConfig';
 
 export default function ExportModal({ segments, filename, metadata }) {
   const [copiedFormat, setCopiedFormat] = useState(null);
 
   const handleDownload = async (format) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/export', {
+      const response = await fetch(buildApiUrl('/api/export'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
